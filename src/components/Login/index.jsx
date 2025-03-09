@@ -1,17 +1,26 @@
 import { useState } from "react";
 import { Container, TextField, Button, Typography, Box } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log("Login:", { email, password });
+
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const handleLogin = () => {
+    if (login(password)) {
+      navigate("/home"); // Redireciona para a Home após login bem-sucedido
+    } else {
+      alert("Senha incorreta!");
+    }
   };
 
   return (
-    <Container maxWidth="xs" sx={{marginTop:'200px'}}>
+    <Container maxWidth="xs" sx={{marginTop:'200px', marginBottom:'20px'}}>
       <Box
         sx={{
           marginTop: 8,
@@ -27,7 +36,7 @@ const Login = () => {
         <Typography variant="h5" component="h1" gutterBottom>
           Login
         </Typography>
-        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+        <form onSubmit={handleLogin} style={{ width: "100%" }}>
           <TextField
             label="E-mail"
             variant="outlined"

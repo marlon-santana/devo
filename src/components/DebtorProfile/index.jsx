@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Box, Container, Typography, Button, Stack, Modal, TextField, IconButton } from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close'; // Ícone de fechar
+import { Box, Container, Typography, Button, Stack, TextField, IconButton } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close'; 
+import { useNavigate } from "react-router-dom";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -24,14 +25,25 @@ const initialDebitor = [
 ];
 
 export const DebtorProfile = () => {
+    const initialValue = 
+        {
+            name: '',
+            product: '',
+            date: new Date().toLocaleDateString('pt-BR'),
+            receber: '' // Novo campo para o valor do produto
+        }
+
+    const name = initialDebitor[0].name;
+    
     const [debitor, setDebitor] = useState(initialDebitor);
-    const [openModal, setOpenModal] = useState(false); // Estado para controlar a abertura do modal
-    const [newDebitor, setNewDebitor] = useState({
-        name: '',
-        product: '',
-        date: new Date().toLocaleDateString('pt-BR'),
-        receber: '' // Novo campo para o valor do produto
-    }); // Estado para o novo devedor
+    const [openBottomSheet, setOpenBottomSheet] = useState(false); // Estado para controlar a abertura do Bottom Sheet
+    const [newDebitor, setNewDebitor] = useState(initialValue); 
+
+    const navigate = useNavigate();
+
+  const Voltar = () => {
+    navigate("/home");
+  };
 
     const totalReceber = debitor.reduce((acc, curr) => {
         if (!curr.pago) {
@@ -92,12 +104,12 @@ export const DebtorProfile = () => {
         doc.save('debtor-profile.pdf');
     };
 
-    const handleOpenModal = () => {
-        setOpenModal(true); // Abre o modal
+    const handleOpenBottomSheet = () => {
+        setOpenBottomSheet(true); // Abre o Bottom Sheet
     };
 
-    const handleCloseModal = () => {
-        setOpenModal(false); // Fecha o modal
+    const handleCloseBottomSheet = () => {
+        setOpenBottomSheet(false); // Fecha o Bottom Sheet
     };
 
     const handleInputChange = (e) => {
@@ -118,7 +130,7 @@ export const DebtorProfile = () => {
         };
         setDebitor([...debitor, newItem]); // Adiciona o novo item à lista
         setNewDebitor({ name: '', product: '', date: new Date().toLocaleDateString('pt-BR'), receber: '' }); // Reseta o formulário
-        handleCloseModal(); // Fecha o modal
+        handleCloseBottomSheet(); // Fecha o Bottom Sheet
     };
 
     const handleDeletePaid = () => {
@@ -141,7 +153,7 @@ export const DebtorProfile = () => {
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={handleOpenModal}
+                    onClick={handleOpenBottomSheet}
                     sx={{
                         borderRadius: '50%', // Deixa o botão redondo
                         width: '60px',
@@ -154,93 +166,92 @@ export const DebtorProfile = () => {
                 </Button>
             </Box>
 
-            {/* Modal para adicionar nova compra */}
-            <Modal
-                open={openModal}
-                onClose={handleCloseModal}
-                aria-labelledby="modal-title"
-                aria-describedby="modal-description"
+            {/* Bottom Sheet para adicionar nova compra */}
+            <Box
+                sx={{
+                    position: 'fixed',
+                    bottom: openBottomSheet ? 0 : '-100%', // Controla a visibilidade do Bottom Sheet
+                    left: 0,
+                    right: 0,
+                    bgcolor: 'background.paper',
+                    boxShadow: 24,
+                    p: 4,
+                    borderRadius: '16px 16px 0 0',
+                    transition: 'bottom 0.3s ease-in-out', // Animação de abertura/fechamento
+                    zIndex: 1100 // Garante que o Bottom Sheet fique acima de outros elementos
+                }}
             >
-                <Box
+                {/* Botão de fechar no canto superior direito */}
+                <IconButton
+                    aria-label="fechar"
+                    onClick={handleCloseBottomSheet}
                     sx={{
                         position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: 400,
-                        bgcolor: 'background.paper',
-                        boxShadow: 24,
-                        p: 4,
-                        borderRadius: '8px',
-                        width: '85vw',
+                        right: 8,
+                        top: 8,
+                        color: 'text.secondary',
                     }}
                 >
-                    {/* Botão de fechar no canto superior direito */}
-                    <IconButton
-                        aria-label="fechar"
-                        onClick={handleCloseModal}
-                        sx={{
-                            position: 'absolute',
-                            right: 8,
-                            top: 8,
-                            color: 'text.secondary',
-                        }}
-                    >
-                        <CloseIcon />
-                    </IconButton>
+                    <CloseIcon />
+                </IconButton>
 
-                    <Typography id="modal-title" variant="h6" component="h2" sx={{ mb: 2 }}>
-                        Adicionar Nova Compra
-                    </Typography>
-                    <form onSubmit={handleSubmit}>
-                        <TextField
-                            fullWidth
-                            label="Nome do Comprador"
-                            name="name"
-                            value={newDebitor.name}
-                            onChange={handleInputChange}
-                            sx={{ mb: 2 }}
-                            required
-                        />
-                        <TextField
-                            fullWidth
-                            label="Descrição do Produto"
-                            name="product"
-                            value={newDebitor.product}
-                            onChange={handleInputChange}
-                            sx={{ mb: 2 }}
-                            required
-                        />
-                        <TextField
-                            fullWidth
-                            label="Valor do Produto"
-                            name="receber"
-                            type="number"
-                            value={newDebitor.receber}
-                            onChange={handleInputChange}
-                            sx={{ mb: 2 }}
-                            required
-                        />
-                        <TextField
-                            fullWidth
-                            label="Data"
-                            name="date"
-                            value={newDebitor.date}
-                            onChange={handleInputChange}
-                            sx={{ mb: 2 }}
-                            disabled // Data é preenchida automaticamente
-                        />
-                        <Button type="submit" variant="contained" color="primary" fullWidth>
-                            Adicionar
-                        </Button>
-                    </form>
-                </Box>
-            </Modal>
+                <Typography id="modal-title" variant="h6" component="h2" sx={{ mb: 2 }}>
+                    Adicionar Nova Compra
+                </Typography>
+                <form onSubmit={handleSubmit}>
+                    <TextField
+                        fullWidth
+                        label="Nome do Comprador"
+                        name="name"
+                        value={newDebitor.name}
+                        onChange={handleInputChange}
+                        sx={{ mb: 2 }}
+                        required
+                    />
+                    <TextField
+                        fullWidth
+                        label="Descrição do Produto"
+                        name="product"
+                        value={newDebitor.product}
+                        onChange={handleInputChange}
+                        sx={{ mb: 2 }}
+                        required
+                    />
+                    <TextField
+                        fullWidth
+                        label="Valor do Produto"
+                        name="receber"
+                        type="number"
+                        value={newDebitor.receber}
+                        onChange={handleInputChange}
+                        sx={{ mb: 2 }}
+                        required
+                    />
+                    <TextField
+                        fullWidth
+                        label="Data"
+                        name="date"
+                        value={newDebitor.date}
+                        onChange={handleInputChange}
+                        sx={{ mb: 2 }}
+                        disabled // Data é preenchida automaticamente
+                    />
+                    <Button type="submit" variant="contained" color="primary" fullWidth>
+                        Adicionar
+                    </Button>
+                </form>
+            </Box>
 
+            <Box display="flex" justifyContent="flex-end" alignItems="center" style={{ marginBottom: 20 }}>
+           
+            <Button onClick={() => Voltar()} variant="contained" color="success">voltar</Button>
+            </Box>
+           
+            
             <Typography sx={{ color: 'green' }}>Descrição de Vendas</Typography>
             <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography>{debitor[0].name}</Typography>
-                <Typography>Total: <span style={{ color: 'red' }}>R$ {totalReceber.toFixed(2)}</span></Typography>
+                <Typography style={{ fontSize: 24 }}>{name}</Typography>
+                <Typography>Total: <span style={{ color: 'red', fontSize: 24 }}>R$ {totalReceber.toFixed(2)}</span></Typography>
             </Box>
             <Box sx={{ mb: 3, p: 1 }}>
                 {debitor.map((sale, index) => (
@@ -258,9 +269,9 @@ export const DebtorProfile = () => {
                 ))}
             </Box>
             <Box display="flex" justifyContent="space-between" sx={{ mb: 3 }}>
-                <Button variant="contained" color="primary" onClick={markAllAsPaid}>Pagar Total</Button>
-                <Button variant="contained" color="secondary" onClick={saveAsPDF}>Salvar como PDF</Button>
-                <Button variant="contained" color="error" onClick={handleDeletePaid}>Deletar Compras Pagas</Button>
+                <Button variant="contained" color="primary" sx={{ fontSize: 12, padding: '20px 15px' }} onClick={markAllAsPaid}>Pagar Total</Button>
+                <Button variant="contained" color="secondary" sx={{ fontSize: 12 }} onClick={saveAsPDF}>Salvar PDF</Button>
+                <Button variant="contained" color="error" sx={{ fontSize: 12 }} onClick={handleDeletePaid}>Deletar Pagas</Button>
             </Box>
         </Container>
     );
