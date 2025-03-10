@@ -1,14 +1,10 @@
 import { Box, Container, Typography, Card, CardContent, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { UserList } from "../UserList";
+// import { debitors } from "../../dadosMock";
+import { useDebtors } from "../../DebtorsContext"; 
 
-const debitors = [
-  { name: "marlon", date: "10/03/2025", receber: 20 },
-  { name: "teresa", date: "08/03/2025", receber: 108 },
-  { name: "yuri", date: "05/03/2025", receber: 10 },
-  { name: "tailer", date: "03/03/2025", receber: 35 }
-];
 
-const totalReceber = debitors.reduce((acc, curr) => acc + curr.receber, 0);
 
 const Home = () => {
   const navigate = useNavigate();
@@ -19,17 +15,23 @@ const Home = () => {
 
   const exit = () => {
     navigate("/login");
-  }
+  };
+
+  const { debitors } = useDebtors();
+
+
+  const totalReceber = debitors.reduce((acc, debitor) => {
+    return acc + debitor.products.reduce((sum, product) => sum + product.value, 0);
+  }, 0);
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 4 }}>
+    <Container maxWidth="sm" sx={{ mt: 4, paddingBottom: "40px" }}>
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography sx={{ margin: "30px 0px 30px 0px" }} fontSize={24}>
           Olá Marlon Santana
         </Typography>
-        <Button sx={{fontSize: 18}} onClick={() => exit()}>sair</Button>
+        <Button sx={{ fontSize: 18 }} onClick={() => exit()}>sair</Button>
       </Box>
-      
 
       <Card sx={{ mb: 3, p: 2, boxShadow: 3 }}>
         <CardContent>
@@ -40,12 +42,14 @@ const Home = () => {
         </CardContent>
       </Card>
 
+      <UserList />
+
       <Typography variant="h6" fontWeight={600}>Vendas recentes</Typography>
 
-      {debitors.map((item, index) => (
+      {debitors.map((debitor) => (
         <Card
-          key={index}
-          onClick={() => openCard(item)}
+          key={debitor.id}
+          onClick={() => openCard(debitor)}
           sx={{
             mt: 3,
             p: 2,
@@ -56,15 +60,15 @@ const Home = () => {
           }}
         >
           <CardContent>
-            <Typography variant="h6" fontWeight={600}>{item.name}</Typography>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
-              <Typography variant="body2" color="text.secondary">{item.date}</Typography>
-              {item.receber !== undefined && (
+            <Typography variant="h6" fontWeight={600}>{debitor.name}</Typography>
+            {debitor.products.map((product, index) => (
+              <Box key={index} display="flex" justifyContent="space-between" alignItems="center" mt={1}>
+                <Typography variant="body2" color="text.secondary">{product.date}</Typography>
                 <Typography variant="body2" color="error" fontWeight={600} fontSize="1.875rem">
-                  R$ {item.receber.toFixed(2)}
+                  R$ {product.value.toFixed(2)}
                 </Typography>
-              )}
-            </Box>
+              </Box>
+            ))}
           </CardContent>
         </Card>
       ))}

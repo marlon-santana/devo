@@ -29,6 +29,10 @@ export const UserList = () => {
         debitor.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const total = debitors.length
+
+    console.log(filteredDebitors)
+
     return (
         <Container maxWidth="sm" sx={{ mt: 4 }}>
             <Typography sx={{ color: 'green' }}>Lista de Devedores</Typography>
@@ -45,7 +49,10 @@ export const UserList = () => {
             />
 
             <Box sx={{ mb: 3, p: 1 }}>
-                {filteredDebitors.map((debitor, index) => (
+               
+                {(!filteredDebitors.length > 0) || (filteredDebitors.length < total)   && 
+                filteredDebitors.map((debitor, index) => (
+                   
                     <Stack
                         key={index}
                         sx={{
