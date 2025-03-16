@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Container, Typography, Stack, TextField } from "@mui/material";
 
 export const UserList = () => {
@@ -23,6 +23,10 @@ export const UserList = () => {
 
     // Estado para armazenar o valor da busca
     const [searchTerm, setSearchTerm] = useState('');
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState('');
+
 
     // Filtrar a lista de devedores com base no termo de busca
     const filteredDebitors = debitors.filter(debitor =>
@@ -30,8 +34,73 @@ export const UserList = () => {
     );
 
     const total = debitors.length
+    const show = filteredDebitors.length > 0 && filteredDebitors.length < total
+    const noShow = filteredDebitors.length === 0
 
-    console.log(filteredDebitors)
+ 
+
+
+    useEffect(() => {
+        if (noShow || show) {
+            setShowToast(true);
+            setToastMessage(noShow ? 'Devedor não encontrado' : 'Devedor encontrado com sucesso!!');
+            setToastType(noShow ? 'error' : 'success');
+
+            const timer = setTimeout(() => {
+                setShowToast(false);
+            }, 3000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [noShow, show]);
+
+    const Tost = (type, message) => {
+        return (
+            <Stack
+                sx={{
+                    backgroundColor: type === 'error' ? '#F44336' : '#4CAF50',
+                    height: '60px',
+                    borderRadius: '5px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    position: 'fixed',
+                    bottom: '20px',
+                    left: '20px',
+                    padding: '10px',
+                    minWidth: '200px',
+                    animation: showToast ? 'slideIn 0.5s ease-out forwards' : 'slideOut 0.5s ease-in forwards',
+                    '@keyframes slideIn': {
+                        from: {
+                            transform: 'translateX(-100%)',
+                            opacity: 0,
+                        },
+                        to: {
+                            transform: 'translateX(0)',
+                            opacity: 1,
+                        },
+                    },
+                    '@keyframes slideOut': {
+                        from: {
+                            transform: 'translateX(0)',
+                            opacity: 1,
+                        },
+                        to: {
+                            transform: 'translateX(-100%)',
+                            opacity: 0,
+                        },
+                    },
+                }}
+            >
+                <Typography sx={{ color: 'white' }}>{message}</Typography>
+            </Stack>
+        );
+    };
+
+   
+
+
+    console.log(showToast)
 
     return (
         <Container maxWidth="sm" sx={{ mt: 4 }}>
@@ -71,6 +140,8 @@ export const UserList = () => {
                         
                     </Stack>
                 ))}
+               
+                {showToast && Tost(toastType, toastMessage)}              
             </Box>
         </Container>
     );
