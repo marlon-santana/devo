@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Container, Typography, Button, Stack, TextField, IconButton } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close'; 
+import AddButton from '../AddButton';
 import { useNavigate } from "react-router-dom";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -142,105 +143,7 @@ export const DebtorProfile = () => {
     return (
         <Container maxWidth="sm" sx={{ mt: 4, position: 'relative' }}>
             {/* Botão de Nova Compra fixo na lateral direita */}
-            <Box
-                sx={{
-                    position: 'fixed',
-                    right: 20,
-                    bottom: 100, // Ajuste a distância do botão em relação ao fundo da tela
-                    zIndex: 1000 // Garante que o botão fique acima de outros elementos
-                }}
-            >
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleOpenBottomSheet}
-                    sx={{
-                        borderRadius: '50%', // Deixa o botão redondo
-                        width: '60px',
-                        height: '60px',
-                        fontSize: '1.5rem',
-                        boxShadow: 3 // Adiciona uma sombra
-                    }}
-                >
-                    +
-                </Button>
-            </Box>
-
-            {/* Bottom Sheet para adicionar nova compra */}
-            <Box
-                sx={{
-                    position: 'fixed',
-                    bottom: openBottomSheet ? 0 : '-100%', // Controla a visibilidade do Bottom Sheet
-                    left: 0,
-                    right: 0,
-                    bgcolor: 'background.paper',
-                    boxShadow: 24,
-                    p: 4,
-                    borderRadius: '16px 16px 0 0',
-                    transition: 'bottom 0.3s ease-in-out', // Animação de abertura/fechamento
-                    zIndex: 1100 // Garante que o Bottom Sheet fique acima de outros elementos
-                }}
-            >
-                {/* Botão de fechar no canto superior direito */}
-                <IconButton
-                    aria-label="fechar"
-                    onClick={handleCloseBottomSheet}
-                    sx={{
-                        position: 'absolute',
-                        right: 8,
-                        top: 8,
-                        color: 'text.secondary',
-                    }}
-                >
-                    <CloseIcon />
-                </IconButton>
-
-                <Typography id="modal-title" variant="h6" component="h2" sx={{ mb: 2 }}>
-                    Adicionar Nova Compra
-                </Typography>
-                <form onSubmit={handleSubmit}>
-                    <TextField
-                        fullWidth
-                        label="Nome do Comprador"
-                        name="name"
-                        value={newDebitor.name}
-                        onChange={handleInputChange}
-                        sx={{ mb: 2 }}
-                        required
-                    />
-                    <TextField
-                        fullWidth
-                        label="Descrição do Produto"
-                        name="product"
-                        value={newDebitor.product}
-                        onChange={handleInputChange}
-                        sx={{ mb: 2 }}
-                        required
-                    />
-                    <TextField
-                        fullWidth
-                        label="Valor do Produto"
-                        name="receber"
-                        type="number"
-                        value={newDebitor.receber}
-                        onChange={handleInputChange}
-                        sx={{ mb: 2 }}
-                        required
-                    />
-                    <TextField
-                        fullWidth
-                        label="Data"
-                        name="date"
-                        value={newDebitor.date}
-                        onChange={handleInputChange}
-                        sx={{ mb: 2 }}
-                        disabled // Data é preenchida automaticamente
-                    />
-                    <Button type="submit" variant="contained" color="primary" fullWidth>
-                        Adicionar
-                    </Button>
-                </form>
-            </Box>
+           <AddButton onClick={handleOpenBottomSheet} />
 
             <Box display="flex" justifyContent="flex-end" alignItems="center" style={{ marginBottom: 20 }}>
            
