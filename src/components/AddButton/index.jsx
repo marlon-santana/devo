@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Box, Button, Typography, IconButton, TextField } from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close';
+import { Button, TextField } from "@mui/material";
+import BottomSheet from '../BottomSheet/index.jsx'; // Importa o componente BottomSheet
 
 const AddButton = ({ onSubmit }) => {
   const [openBottomSheet, setOpenBottomSheet] = useState(false);
@@ -28,6 +28,7 @@ const AddButton = ({ onSubmit }) => {
       receber: '',
       date: new Date().toLocaleDateString(),
     });
+   
     handleClose();
   };
 
@@ -54,37 +55,7 @@ const AddButton = ({ onSubmit }) => {
       </Button>
 
       {/* BottomSheet */}
-      <Box
-        sx={{
-          position: 'fixed',
-          bottom: openBottomSheet ? 0 : '-100%',
-          left: 0,
-          right: 0,
-          bgcolor: 'background.paper',
-          boxShadow: 24,
-          p: 4,
-          borderRadius: '16px 16px 0 0',
-          transition: 'bottom 0.3s ease-in-out',
-          zIndex: 1100,
-        }}
-      >
-        {/* Botão de fechar */}
-        <IconButton
-          aria-label="fechar"
-          onClick={handleClose}
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: 'text.secondary',
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-
-        <Typography id="modal-title" variant="h6" component="h2" sx={{ mb: 2 }}>
-          Adicionar Nova Compra
-        </Typography>
+      <BottomSheet open={openBottomSheet} onClose={handleClose} title="Adicionar Nova Compra">
         <form onSubmit={handleSubmit}>
           <TextField
             fullWidth
@@ -127,7 +98,7 @@ const AddButton = ({ onSubmit }) => {
             Adicionar
           </Button>
         </form>
-      </Box>
+      </BottomSheet>
     </>
   );
 };

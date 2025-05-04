@@ -5,7 +5,7 @@ const DebtorsContext = createContext();
 
 export const DebtorsProvider = ({ children }) => {
   const [debitors, setDebitors] = useState(mockDebitors);
-  console.log(debitors);
+ 
 
   return (
     <DebtorsContext.Provider value={{ debitors, setDebitors }}>
