@@ -1,31 +1,40 @@
 import React, { useState } from 'react';
 import { Button, TextField } from "@mui/material";
-import BottomSheet from '../BottomSheet/index.jsx'; // Importa o componente BottomSheet
+import BottomSheet from '../BottomSheet/index.jsx'; 
+
 
 const AddButton = ({ onSubmit }) => {
   const [openBottomSheet, setOpenBottomSheet] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    product: '',
-    receber: '',
+    productName: '',
+    value: '',
     date: new Date().toLocaleDateString(),
   });
+
+
 
   const handleOpen = () => setOpenBottomSheet(true);
   const handleClose = () => setOpenBottomSheet(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  
+    // Converte o valor para número se o campo for "value"
+    setFormData({
+      ...formData,
+      [name]: name === "value" ? parseFloat(value) || 0 : value,
+    });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formData); // Passa os dados do formulário para o componente pai
+
     setFormData({
       name: '',
-      product: '',
-      receber: '',
+      productName: '',
+      value: '',
       date: new Date().toLocaleDateString(),
     });
    
@@ -68,9 +77,9 @@ const AddButton = ({ onSubmit }) => {
           />
           <TextField
             fullWidth
-            label="Descrição do Produto"
-            name="product"
-            value={formData.product}
+            label="Nome do Produto"
+            name="productName"
+            value={formData.productName}
             onChange={handleInputChange}
             sx={{ mb: 2 }}
             required
@@ -78,9 +87,9 @@ const AddButton = ({ onSubmit }) => {
           <TextField
             fullWidth
             label="Valor do Produto"
-            name="receber"
+            name="value"
             type="number"
-            value={formData.receber}
+            value={formData.value}
             onChange={handleInputChange}
             sx={{ mb: 2 }}
             required

@@ -1,24 +1,19 @@
 import { Box, Container, Typography, Card, CardContent, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { UserList } from "../UserList";
-// import { debitors } from "../../dadosMock";
-import { useDebtors } from "../../DebtorsContext"; 
-
-
+import { useDebtors } from "../../DebtorsContext";
 
 const Home = () => {
   const navigate = useNavigate();
+  const { debitors } = useDebtors();
 
   const openCard = (debitor) => {
-    navigate("/debtor-profile", { state: { debitor } });
+    navigate("/debtor-profile", { state: { debitor } }); // Passa o devedor selecionado
   };
 
   const exit = () => {
     navigate("/login");
   };
-
-  const { debitors } = useDebtors();
-
 
   const totalReceber = debitors.reduce((acc, debitor) => {
     return acc + debitor.products.reduce((sum, product) => sum + product.value, 0);
@@ -49,7 +44,7 @@ const Home = () => {
       {debitors.map((debitor) => (
         <Card
           key={debitor.id}
-          onClick={() => openCard(debitor)}
+          onClick={() => openCard(debitor)} // Chama a função para navegar
           sx={{
             mt: 3,
             p: 2,
